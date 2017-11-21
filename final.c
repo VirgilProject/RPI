@@ -87,6 +87,51 @@ void storePreset(){
 	fclose(fp);
 }
 
+void setInOut(){
+	char pcsc[48];
+	int in, out;
+	in = input / 2;
+	out = output / 2;
+	system("python virgilSwitch.py 0x5");
+	system("python virgilSwitch.py 0x25");
+	system("python virgilSwitch.py 0x45");
+	system("python virgilSwitch.py 0x65");
+	strcpy(pcsc, "python virgilSwitch.py 0x");
+	switch(out){
+		case 1:
+			break;
+		case 2:
+			strcat(pcsc, "2");
+			break;
+		case 3:
+			strcat(pcsc, "4");
+			break;
+		case 4:
+			strcat(pcsc, "6");
+	}
+	switch(in){
+		case 1:
+			strcat(pcsc, "0");
+			break;
+		case 2:
+			strcat(pcsc, "1");
+			break;
+		case 3:
+			strcat(pcsc, "2");
+			break;
+		case 4:
+			strcat(pcsc, "3");
+	}	
+	system("python virgilSwitch.py 0x05");
+	system("python virgilSwitch.py 0x25");
+	system("python virgilSwitch.py 0x45");
+	system("python virgilSwitch.py 0x65");
+//	printf("%s\n", pcsc);
+	system(pcsc);
+	if(out != 1)
+		system("python virgilSwitch.py 0x5");
+}
+
 PI_THREAD (inDE){
 	printf("Thread inDE created successfully \n");
 	int pin1, pin2, old1, old2;
@@ -99,25 +144,37 @@ PI_THREAD (inDE){
 		if(pin1 != old1){
 			if(pin1 == pin2 && input != 2){
 				input--;
-				setInLed();
-				printf("Input: %d \n", input);
+				if(input % 2 == 0){
+					setInLed();					
+					setInOut();
+				}
+//				printf("Input: %d \n", input);
 		}
-			else if(pin1 != pin2 && input != 10){
+			else if(pin1 != pin2 && input != 8){
 				input++;
-				setInLed();
-				printf("Input: %d \n", input);
+				if(input % 2 == 0){
+					setInOut();
+					setInLed();
+				}
+//				printf("Input: %d \n", input);
 		}
 		}
 		else if(pin2 != old2){
-			if(pin1 == pin2 && input != 10){
+			if(pin1 == pin2 && input != 8){
 				input++;
-				setInLed();
-				printf("Input: %d \n", input);
+				if(input % 2 == 0){
+					setInLed();
+					setInOut();
+				}
+//				printf("Input: %d \n", input);
 		}
 			else if(pin1 != pin2 && input !=2){
 				input--;
-				setInLed();
-				printf("Input: %d \n", input);
+				if(input % 2 == 0){
+					setInLed();
+					setInOut();
+				}
+//				printf("Input: %d \n", input);
 		}
 		}
 		old1 = pin1;
@@ -137,25 +194,37 @@ PI_THREAD (outDE){
 		if(pin1 != old1){
 			if(pin1 == pin2 && output != 2){
 				output--;
-				setOutLed();
-				printf("Output: %d \n", output);
+				if(output % 2 == 0){
+					setOutLed();
+					setInOut();
+				}
+//				printf("Output: %d \n", output);
 			}
 			else if(pin1 != pin2 && output != 8){
 				output++;
-				setOutLed();
-				printf("Output: %d \n", output);
+				if(output % 2 ==0){
+					setOutLed();
+					setInOut();
+				}
+//				printf("Output: %d \n", output);
 			}
 	}
 		else if(pin2 != old2){
 			if(pin1 == pin2 && output != 8){
 				output++;
-				setOutLed();
-				printf("Output: %d \n", output);
+				if(output % 2 == 0){
+					setOutLed();
+					setInOut();
+				}
+//				printf("Output: %d \n", output);
 			}
 			else if(pin1 != pin2 && output != 2){
 				output--;
-				setOutLed();
-				printf("Output: %d \n", output);
+				if(output % 2 == 0){
+					setOutLed();
+					setInOut();
+				}
+//				printf("Output: %d \n", output);
 			}
 		}
 		old1 = pin1;
@@ -276,9 +345,9 @@ int main(void){
 	oldVol = volume = 2;
 	piThreadCreate(inDE);
 	piThreadCreate(outDE);
-	piThreadCreate(presetDE);
-	piThreadCreate(volumeDE);
-	piThreadCreate(button);
+//	piThreadCreate(presetDE);
+//	piThreadCreate(volumeDE);
+//	piThreadCreate(button);
 	setInLed();
 	setOutLed();
 	set7SD();
