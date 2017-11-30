@@ -5,7 +5,7 @@
 #include<string.h>
 
 int main(int argc, char *argv[]){
-	int input, output;
+/*	int input, output;
 	input = atoi(argv[1]);
 	output = atoi(argv[2]);
 	char pcsc[48];
